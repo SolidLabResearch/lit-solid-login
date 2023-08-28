@@ -1,6 +1,6 @@
 import {html, css, LitElement} from 'lit';
 import {fetch, handleIncomingRedirect, getDefaultSession, login} from '@inrupt/solid-client-authn-browser';
-
+import {QueryEngine} from "@comunica/query-sparql";
 
 export class SolidLogin extends LitElement {
   static styles = css`
@@ -76,14 +76,19 @@ export class SolidLogin extends LitElement {
       console.log('Use inrupt library');
       let idp;
 
-      if (this.selectedOption === 'idp') {
-        idp = this.renderRoot.querySelector(`#${this.selectedOption}`).value;
+      const result = this.renderRoot.querySelector(`#${this.selectedOption}`).reportValidity();
+      if (!result) {
+        return;
       }
 
-      // TODO: Query IDP from WebID
-      // https://github.com/SolidLabResearch/solid-web-app-template/blob/main/src/js/index.js
+      if (this.selectedOption === 'idp') {
+        idp = this.renderRoot.querySelector(`#${this.selectedOption}`).value;
+      } else {
+        idp = await this._getOidcIssuerFromWebID(this.renderRoot.querySelector(`#${this.selectedOption}`).value);
+      }
 
       if (idp) {
+        console.log('Using IDP ', idp);
         await login({
           oidcIssuer: idp,
           redirectUrl: window.location.href
@@ -91,6 +96,35 @@ export class SolidLogin extends LitElement {
       } else {
         console.log('No IDP. Not logging in.');
       }
+    }
+  }
+
+  async _getOidcIssuerFromWebID(webId) {
+    const myEngine = new QueryEngine();
+    const bindingsStream = await myEngine.queryBindings(`
+  PREFIX solid: <http://www.w3.org/ns/solid/terms#>
+  SELECT ?oidcIssuer WHERE {
+    <${webId}> solid:oidcIssuer ?oidcIssuer
+  }`, {
+      sources: [webId],
+    });
+
+    const bindings = await bindingsStream.toArray();
+
+    if (bindings.length > 0) {
+      if (bindings.length > 1) {
+        console.warn(`More than 1 OIDC issuer is present in the WebID. Using the first one returned by Comunica.`);
+      }
+
+      return bindings[0].get('oidcIssuer').id;
+    } else {
+      return null;
+    }
+  }
+
+  _checkForEnter({key}) {
+    if (key === "Enter") {
+      this._clickLogin();
     }
   }
 
@@ -109,10 +143,18 @@ export class SolidLogin extends LitElement {
         <label for="idp-radio">Identity Provider</label><br>
       </div>
       <div id="login-form" class=${this.currentWebId ? 'hidden' : ''}>
-        <input type="text" id="webid" placeholder="Enter your WebID"
-               class=${this.selectedOption === 'webid' ? '' : 'hidden'}>
-        <input type="text" id="idp" placeholder="Enter your Identity Provider"
-               class=${this.selectedOption === 'idp' ? '' : 'hidden'}>
+        <input type="url" id="webid" placeholder="Enter your WebID"
+               title="Enter your WebID"
+               required
+               class=${this.selectedOption === 'webid' ? '' : 'hidden'}
+               @keyup="${this._checkForEnter}"
+        >
+        <input type="url" id="idp" placeholder="Enter your Identity Provider"
+               title="Enter your Identity Provider"
+               required
+               class=${this.selectedOption === 'idp' ? '' : 'hidden'}
+               @keyup="${this._checkForEnter}"
+        >
         <button id="login-btn" @click="${this._clickLogin}">Log in</button>
       </div>
       <div id="welcome" class=${this.currentWebId ? '' : 'hidden'}>

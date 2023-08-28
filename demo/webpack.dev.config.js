@@ -4,6 +4,6 @@ export default Object.assign(config, {
   mode: "development",
   devtool: 'source-map',
   devServer: {
-    watchFiles: ['**/*.js', '**/*.html'],
+    watchFiles: ['**/*.js', '../**/*.js', '**/*.html'],
   }
 })
