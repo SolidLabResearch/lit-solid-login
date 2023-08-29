@@ -12,6 +12,11 @@ export class SolidLogin extends LitElement {
       padding-bottom: 10px;
     }
 
+    #error {
+      padding-top: 10px;
+      color: red;
+    }
+
     .hidden {
       display: none;
       visibility: hidden;
@@ -24,6 +29,7 @@ export class SolidLogin extends LitElement {
     loggedInCallback: {type: Function},
     loggedOutCallback: {type: Function},
     currentWebId: {type: String, state: true},
+    errorMessage: {type: String, state: true},
     handleIncomingRedirectOptions: {type: Object},
     loginOptions: {type: Object},
     showWelcomeMessage: {type: Boolean}
@@ -37,6 +43,7 @@ export class SolidLogin extends LitElement {
     this.selectedOption = 'webid';
     this.showWelcomeMessage = true;
     this.currentWebId = null;
+    this.errorMessage = null;
     this.defaultHandleIncomingRedirectOptions = {
       url: window.location.href,
       restorePreviousSession: true
@@ -88,6 +95,7 @@ export class SolidLogin extends LitElement {
    */
   async _clickLogin() {
     console.log('Login button clicked.');
+    this.errorMessage = null;
 
     if (this.loginCallback) {
       console.log('Using callback');
@@ -100,6 +108,7 @@ export class SolidLogin extends LitElement {
       let idp;
 
       const result = this.renderRoot.querySelector(`#${this.selectedOption}`).reportValidity();
+
       if (!result) {
         return;
       }
@@ -107,16 +116,29 @@ export class SolidLogin extends LitElement {
       if (this.selectedOption === 'idp') {
         idp = this.renderRoot.querySelector(`#${this.selectedOption}`).value;
       } else {
-        idp = await this._getOidcIssuerFromWebID(this.renderRoot.querySelector(`#${this.selectedOption}`).value);
+        try {
+          idp = await this._getOidcIssuerFromWebID(this.renderRoot.querySelector(`#${this.selectedOption}`).value);
+        } catch (e) {
+          this.errorMessage = 'An error occurred when getting the OIDC issuer from the WebID.';
+          console.error(e);
+          return;
+        }
+
+        if (!idp) {
+          this.errorMessage = 'We found no OIDC issuer in the WebID.';
+          return;
+        }
       }
 
-      if (idp) {
-        console.log('Using IDP ', idp);
-        const options = {...this.defaultLoginOptions, ...this.loginOptions};
-        options.oidcIssuer = idp;
+      console.log('Using IDP', idp);
+      const options = {...this.defaultLoginOptions, ...this.loginOptions};
+      options.oidcIssuer = idp;
+
+      try {
         await login(options);
-      } else {
-        console.log('No IDP. Not logging in.');
+      } catch (e) {
+        this.errorMessage = 'An error occurred when logging in.';
+        console.error(e);
       }
     }
   }
@@ -174,6 +196,17 @@ export class SolidLogin extends LitElement {
     if (key === 'Enter') {
       this._clickLogin();
     }
+  }
+
+  /**
+   *
+   */
+  _errorTemplate() {
+    return html`
+      <div id="error" class=${this.errorMessage === null ? 'hidden' : ''}>
+        ${this.errorMessage}
+      </div>
+    `;
   }
 
   /**
@@ -248,6 +281,7 @@ export class SolidLogin extends LitElement {
     return html`
       ${this._radiosTemplate()}
       ${this._loginFormTemplate()}
+      ${this._errorTemplate()}
       ${this._postLoginTemplate()}
     `;
   }
