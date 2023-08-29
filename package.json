@@ -13,8 +13,7 @@
   },
   "scripts": {
     "analyze": "cem analyze --litelement",
-    "start": "web-dev-server",
-    "demo": "cd demo && webpack serve -c ./webpack.dev.config.js --static ."
+    "start": "cd demo && webpack serve -c ./webpack.dev.config.js --static ."
   },
   "dependencies": {
     "@comunica/query-sparql": "^2.8.3",

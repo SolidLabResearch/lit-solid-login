@@ -1,5 +1,5 @@
 import {html, css, LitElement} from 'lit';
-import {fetch, handleIncomingRedirect, getDefaultSession, login} from '@inrupt/solid-client-authn-browser';
+import {fetch, handleIncomingRedirect, getDefaultSession, login, logout} from '@inrupt/solid-client-authn-browser';
 import {QueryEngine} from "@comunica/query-sparql";
 
 export class SolidLogin extends LitElement {
@@ -21,18 +21,26 @@ export class SolidLogin extends LitElement {
   static properties = {
     selectedOption: {type: String},
     loginCallback: {type: Function},
-    loggedInCallback: {
-      type: Function
-    },
-    currentWebId: {type: String, state: true}
+    loggedInCallback: {type: Function},
+    loggedOutCallback: {type: Function},
+    currentWebId: {type: String, state: true},
+    handleIncomingRedirectOptions: {type: Object},
+    loginOptions: {type: Object},
+    showWelcomeMessage: {type: Boolean}
   };
 
   constructor() {
     super();
     this.selectedOption = 'webid';
+    this.showWelcomeMessage = true;
     this.currentWebId = null;
-    console.log(this.loggedInCallback);
-    console.log(this.loginCallback);
+    this.defaultHandleIncomingRedirectOptions = {
+      url: window.location.href,
+      restorePreviousSession: true
+    };
+    this.defaultLoginOptions = {
+      redirectUrl: window.location.href
+    };
   }
 
   connectedCallback() {
@@ -42,12 +50,8 @@ export class SolidLogin extends LitElement {
 
   async _onLoad() {
     console.log('On load called');
-    await handleIncomingRedirect(
-      {
-        url: window.location.href,
-        restorePreviousSession: true,
-      }
-    );
+    const options = {...this.defaultHandleIncomingRedirectOptions, ...this.handleIncomingRedirectOptions};
+    await handleIncomingRedirect(options);
 
     console.log(getDefaultSession().info);
     this.currentWebId = getDefaultSession().info.webId;
@@ -89,10 +93,9 @@ export class SolidLogin extends LitElement {
 
       if (idp) {
         console.log('Using IDP ', idp);
-        await login({
-          oidcIssuer: idp,
-          redirectUrl: window.location.href
-        });
+        const options = {...this.defaultLoginOptions, ...this.loginOptions};
+        options.oidcIssuer = idp;
+        await login(options);
       } else {
         console.log('No IDP. Not logging in.');
       }
@@ -122,13 +125,22 @@ export class SolidLogin extends LitElement {
     }
   }
 
+  async _clickLogout() {
+    await logout();
+    this.currentWebId = null;
+
+    if (this.loggedOutCallback) {
+      this.loggedOutCallback();
+    }
+  }
+
   _checkForEnter({key}) {
     if (key === "Enter") {
       this._clickLogin();
     }
   }
 
-  render() {
+  radiosTemplate() {
     return html`
       <div id="radios" class=${this.currentWebId ? 'hidden' : ''}>
         <input type="radio" id="webid-radio" name="webIdorIdp" value="webid"
@@ -142,6 +154,11 @@ export class SolidLogin extends LitElement {
         >
         <label for="idp-radio">Identity Provider</label><br>
       </div>
+    `
+  }
+
+  loginFormTemplate() {
+    return html`
       <div id="login-form" class=${this.currentWebId ? 'hidden' : ''}>
         <input type="url" id="webid" placeholder="Enter your WebID"
                title="Enter your WebID"
@@ -157,9 +174,26 @@ export class SolidLogin extends LitElement {
         >
         <button id="login-btn" @click="${this._clickLogin}">Log in</button>
       </div>
-      <div id="welcome" class=${this.currentWebId ? '' : 'hidden'}>
+    `
+  }
+
+  postLoginTemplate() {
+    return html`
+      <div id="welcome" class=${this.currentWebId && this.showWelcomeMessage ? '' : 'hidden'}>
         <p>Logged in with <span>${this.currentWebId}</span></p>
       </div>
+      <button id="logout-btn"
+              class=${this.currentWebId ? '' : 'hidden'}
+              @click="${this._clickLogout}">Log out
+      </button>
+    `
+  }
+
+  render() {
+    return html`
+      ${this.radiosTemplate()}
+      ${this.loginFormTemplate()}
+      ${this.postLoginTemplate()}
     `;
   }
 }
