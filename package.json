@@ -13,7 +13,11 @@
   },
   "scripts": {
     "analyze": "cem analyze --litelement",
-    "start": "cd demo && webpack serve -c ./webpack.dev.config.js --static ."
+    "start": "cd demo && webpack serve -c ./webpack.dev.config.js --static .",
+    "lint:js": "eslint . --ext js --report-unused-disable-directives --max-warnings 0",
+    "lint:js:fix": "eslint . --ext js --report-unused-disable-directives --max-warnings 0 --fix",
+    "lint:markdown": "markdownlint-cli2",
+    "lint:markdown:fix": "markdownlint-cli2-fix"
   },
   "dependencies": {
     "@comunica/query-sparql": "^2.8.3",
@@ -25,10 +29,14 @@
     "@custom-elements-manifest/analyzer": "^0.4.17",
     "@web/dev-server": "^0.1.34",
     "copy-webpack-plugin": "^11.0.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-jsdoc": "^46.4.6",
+    "eslint-plugin-lit": "^1.9.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "webpack": "^5.68.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.7.4"
+    "webpack-dev-server": "^4.7.4",
+    "markdownlint-cli2": "^0.8.1"
   },
   "customElements": "custom-elements.json"
 }

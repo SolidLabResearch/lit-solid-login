@@ -1,8 +1,10 @@
 # \<solid-login>
 
-This webcomponent follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+This Web Component follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
 
 ## Installation
+
+This doesn't work (yet).
 
 ```bash
 npm i solid-login
@@ -18,18 +20,14 @@ npm i solid-login
 <solid-login></solid-login>
 ```
 
+Best to have a look at `demo/index.html` to see how we do it now.
 
+## Local Demo
 
-## Tooling configs
-
-For most of the tools, the configuration is in the `package.json` to minimize the amount of files in your project.
-
-If you customize the configuration a lot, you can consider moving them to individual files.
-
-## Local Demo with `web-dev-server`
+```bash
+npm i
+```
 
 ```bash
 npm start
 ```
-
-To run a local development server that serves the basic demo located in `demo/index.html`

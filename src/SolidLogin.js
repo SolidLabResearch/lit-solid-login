@@ -1,6 +1,6 @@
-import {html, css, LitElement} from 'lit';
+import {html, css, LitElement, TemplateResult} from 'lit';
 import {fetch, handleIncomingRedirect, getDefaultSession, login, logout} from '@inrupt/solid-client-authn-browser';
-import {QueryEngine} from "@comunica/query-sparql";
+import {QueryEngine} from '@comunica/query-sparql';
 
 export class SolidLogin extends LitElement {
   static styles = css`
@@ -29,6 +29,9 @@ export class SolidLogin extends LitElement {
     showWelcomeMessage: {type: Boolean}
   };
 
+  /**
+   *
+   */
   constructor() {
     super();
     this.selectedOption = 'webid';
@@ -43,12 +46,19 @@ export class SolidLogin extends LitElement {
     };
   }
 
+  /**
+   *
+   */
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('load', this._onLoad.bind(this));
+    window.addEventListener('load', this.onLoad.bind(this));
   }
 
-  async _onLoad() {
+  /**
+   *
+   * @returns {Promise<void>}
+   */
+  async onLoad() {
     console.log('On load called');
     const options = {...this.defaultHandleIncomingRedirectOptions, ...this.handleIncomingRedirectOptions};
     await handleIncomingRedirect(options);
@@ -58,15 +68,24 @@ export class SolidLogin extends LitElement {
     console.log(this.currentWebId);
 
     if (getDefaultSession().info.isLoggedIn && this.loggedInCallback) {
-      console.log('Calling loggedInCallback')
+      console.log('Calling loggedInCallback');
       this.loggedInCallback({fetch, session: getDefaultSession()});
     }
   }
 
+  /**
+   * This method handles the clicking on a radio button.
+   * @param {Event} e - The event of the click.
+   * @private
+   */
   _clickRadioButton(e) {
     this.selectedOption = e.target.value;
   }
 
+  /**
+   * This method handles the clicking on the login button.
+   * @private
+   */
   async _clickLogin() {
     console.log('Login button clicked.');
 
@@ -102,6 +121,12 @@ export class SolidLogin extends LitElement {
     }
   }
 
+  /**
+   * This function returns the OIDC issuer of a WebID.
+   * @param  {string} webId - The WebID from which to get the OIDC issuer.
+   * @returns {string} The OIDC issuer of the WebID.
+   * @private
+   */
   async _getOidcIssuerFromWebID(webId) {
     const myEngine = new QueryEngine();
     const bindingsStream = await myEngine.queryBindings(`
@@ -116,7 +141,7 @@ export class SolidLogin extends LitElement {
 
     if (bindings.length > 0) {
       if (bindings.length > 1) {
-        console.warn(`More than 1 OIDC issuer is present in the WebID. Using the first one returned by Comunica.`);
+        console.warn('More than 1 OIDC issuer is present in the WebID. Using the first one returned by Comunica.');
       }
 
       return bindings[0].get('oidcIssuer').id;
@@ -125,6 +150,11 @@ export class SolidLogin extends LitElement {
     }
   }
 
+  /**
+   *
+   * @returns {Promise<void>}
+   * @private
+   */
   async _clickLogout() {
     await logout();
     this.currentWebId = null;
@@ -134,13 +164,24 @@ export class SolidLogin extends LitElement {
     }
   }
 
-  _checkForEnter({key}) {
-    if (key === "Enter") {
+  /**
+   * This method checks if the keyup event is an enter and starts the login process if this is the case.
+   * @param {object} args - The arguments given to a keyup event handler.
+   * @private
+   */
+  _checkForEnter(args) {
+    const {key} = args;
+    if (key === 'Enter') {
       this._clickLogin();
     }
   }
 
-  radiosTemplate() {
+  /**
+   * This method returns the radio group for filling in a WebID or IDP.
+   * @returns {TemplateResult<1>} A radio group for filling in a WebID or IDP.
+   * @private
+   */
+  _radiosTemplate() {
     return html`
       <div id="radios" class=${this.currentWebId ? 'hidden' : ''}>
         <input type="radio" id="webid-radio" name="webIdorIdp" value="webid"
@@ -154,10 +195,15 @@ export class SolidLogin extends LitElement {
         >
         <label for="idp-radio">Identity Provider</label><br>
       </div>
-    `
+    `;
   }
 
-  loginFormTemplate() {
+  /**
+   * This function returns the login form.
+   * @returns {TemplateResult<1>} A login form.
+   * @private
+   */
+  _loginFormTemplate() {
     return html`
       <div id="login-form" class=${this.currentWebId ? 'hidden' : ''}>
         <input type="url" id="webid" placeholder="Enter your WebID"
@@ -174,10 +220,15 @@ export class SolidLogin extends LitElement {
         >
         <button id="login-btn" @click="${this._clickLogin}">Log in</button>
       </div>
-    `
+    `;
   }
 
-  postLoginTemplate() {
+  /**
+   * This method returns the template that needs to be shown after logging in.
+   * @returns {TemplateResult<1>} Post-login HTML
+   * @private
+   */
+  _postLoginTemplate() {
     return html`
       <div id="welcome" class=${this.currentWebId && this.showWelcomeMessage ? '' : 'hidden'}>
         <p>Logged in with <span>${this.currentWebId}</span></p>
@@ -186,14 +237,18 @@ export class SolidLogin extends LitElement {
               class=${this.currentWebId ? '' : 'hidden'}
               @click="${this._clickLogout}">Log out
       </button>
-    `
+    `;
   }
 
+  /**
+   * This function returns the HTML of this Web Component.
+   * @returns {TemplateResult<1>} The HTML of this Web Component.
+   */
   render() {
     return html`
-      ${this.radiosTemplate()}
-      ${this.loginFormTemplate()}
-      ${this.postLoginTemplate()}
+      ${this._radiosTemplate()}
+      ${this._loginFormTemplate()}
+      ${this._postLoginTemplate()}
     `;
   }
 }
