@@ -54,7 +54,7 @@ export class SolidLogin extends LitElement {
   }
 
   /**
-   *
+   * This method is invoked when the component is added to the document's DOM.
    */
   connectedCallback() {
     super.connectedCallback();
@@ -62,7 +62,8 @@ export class SolidLogin extends LitElement {
   }
 
   /**
-   *
+   * This method should be called when the window has loaded.
+   * It checks if the app is reloaded after a redirect that happened after logging in.
    * @returns {Promise<void>}
    */
   async onLoad() {
@@ -173,7 +174,7 @@ export class SolidLogin extends LitElement {
   }
 
   /**
-   *
+   * This method handles the clicking on the logout button.
    * @returns {Promise<void>}
    * @private
    */
@@ -199,7 +200,9 @@ export class SolidLogin extends LitElement {
   }
 
   /**
-   *
+   * This function return the error HTML.
+   * @returns {TemplateResult<1>} The error HTML.
+   * @private
    */
   _errorTemplate() {
     return html`
