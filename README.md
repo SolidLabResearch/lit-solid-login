@@ -10,6 +10,12 @@ This doesn't work (yet).
 npm i solid-login
 ```
 
+But the following does.
+
+```bash
+npm i https://github.com/SolidLabResearch/lit-solid-login
+```
+
 ## Usage
 
 ```html
