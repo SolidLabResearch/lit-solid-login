@@ -43,29 +43,29 @@ This disables the default Solid-OIDC login process.
 
 ## Local Demo
 
-1. Install dependencies via
+1. Install the dependencies via
 
    ```bash
    npm i
    ```
 
-2. Start demo via
+2. Start the demo via
 
    ```bash
    npm start
    ```
 
-3. Open browser at <http://localhost:8080>.
+3. Open a browser at <http://localhost:8080>.
 
 ## Tests
 
-1. Install dependencies via
+1. Install the dependencies via
 
    ```shell
    npm i
    ```
 
-2. Start demo via
+2. Start the demo via
 
    ```shell
    npm start
@@ -78,7 +78,7 @@ This disables the default Solid-OIDC login process.
    npm run prepare:pods
    ```
 
-4. Start Solid server with the pods via
+4. Start the Solid server with the pods via
 
    ```shell
    npm run start:pods
