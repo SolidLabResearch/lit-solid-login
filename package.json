@@ -17,7 +17,13 @@
     "lint:js": "eslint . --ext js --report-unused-disable-directives --max-warnings 0",
     "lint:js:fix": "eslint . --ext js --report-unused-disable-directives --max-warnings 0 --fix",
     "lint:markdown": "markdownlint-cli2",
-    "lint:markdown:fix": "markdownlint-cli2-fix"
+    "lint:markdown:fix": "markdownlint-cli2-fix",
+    "test": "cypress run -b chrome",
+    "prepare:pods": "npm run prepare:pods:accounts && npm run prepare:pods:data",
+    "prepare:pods:accounts": "node scripts/add-pod-accounts.js",
+    "prepare:pods:data": "cpy initial-pod-data/* pods/example/ --flat",
+    "start:pods": "community-solid-server -c @css:config/file-no-setup.json -f pods",
+    "reset:pods": "rimraf pods && npm run prepare:pods"
   },
   "dependencies": {
     "@comunica/query-sparql": "^2.8.3",
@@ -36,7 +42,11 @@
     "webpack": "^5.68.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4",
-    "markdownlint-cli2": "^0.8.1"
+    "markdownlint-cli2": "^0.8.1",
+    "@solid/community-server": "^6.0.1",
+    "cpy-cli": "^5.0.0",
+    "rimraf": "^5.0.1",
+    "cypress": "^12.17.1"
   },
   "customElements": "custom-elements.json"
 }

@@ -8,13 +8,23 @@
       padding: 30px;
     }
 
-    solid-login {
+    #top {
       padding: 25px;
+    }
+
+    .hidden {
+      visibility: hidden;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div id="demo"></div>
+  <div id="top"></div>
+
+  <button id="query-wish-list">Show book wish list (public)</button>
+  <button id="query-favourite-books" class="hidden">Show favourite books (private)</button>
+
+  <div id="result"></div>
 
   <script src="index.js"></script>
 </body>

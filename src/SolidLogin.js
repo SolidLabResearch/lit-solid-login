@@ -67,16 +67,11 @@ export class SolidLogin extends LitElement {
    * @returns {Promise<void>}
    */
   async onLoad() {
-    console.log('On load called');
     const options = {...this.defaultHandleIncomingRedirectOptions, ...this.handleIncomingRedirectOptions};
     await handleIncomingRedirect(options);
-
-    console.log(getDefaultSession().info);
     this.currentWebId = getDefaultSession().info.webId;
-    console.log(this.currentWebId);
 
     if (getDefaultSession().info.isLoggedIn && this.loggedInCallback) {
-      console.log('Calling loggedInCallback');
       this.loggedInCallback({fetch, session: getDefaultSession()});
     }
   }
@@ -95,17 +90,14 @@ export class SolidLogin extends LitElement {
    * @private
    */
   async _clickLogin() {
-    console.log('Login button clicked.');
     this.errorMessage = null;
 
     if (this.loginCallback) {
-      console.log('Using callback');
       this.loginCallback({
         type: this.selectedOption,
         value: this.renderRoot.querySelector(`#${this.selectedOption}`).value
       });
     } else {
-      console.log('Use inrupt library');
       let idp;
 
       const result = this.renderRoot.querySelector(`#${this.selectedOption}`).reportValidity();
@@ -131,7 +123,6 @@ export class SolidLogin extends LitElement {
         }
       }
 
-      console.log('Using IDP', idp);
       const options = {...this.defaultLoginOptions, ...this.loginOptions};
       options.oidcIssuer = idp;
 
