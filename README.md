@@ -26,6 +26,15 @@ npm i https://github.com/SolidLabResearch/lit-solid-login
 <solid-login />
 ```
 
+The screenshot belows shows the result in a Web app.
+
+![A screenshot from a Web app.
+It contains two radio buttons next to each other:
+one for "WebID" and one for "Identity Provider".
+Below that there is a field where the user fills in either their WebID or
+Identity Provider.
+Next to the field is the login button.](screenshot.png)
+
 Best to have a look at the code in the folder `demo` to see how we do it now.
 
 ## Options
