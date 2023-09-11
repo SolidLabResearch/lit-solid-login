@@ -26,7 +26,7 @@ npm i https://github.com/SolidLabResearch/lit-solid-login
 <solid-login />
 ```
 
-Best to have a look at `demo/index.html` to see how we do it now.
+Best to have a look at the code in the folder `demo` to see how we do it now.
 
 ## Options
 
