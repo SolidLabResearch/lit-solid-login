@@ -3,7 +3,7 @@
   "description": "Webcomponent solid-login following open-wc recommendations",
   "license": "MIT",
   "author": "Pieter Heyvaert (https://pieterheyvaert.com/#me)",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "main": "index.js",
   "module": "index.js",
