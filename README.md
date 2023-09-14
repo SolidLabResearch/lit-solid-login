@@ -1,6 +1,11 @@
 # Solid Login Web Component
 
-This Web Component follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+This is a [Web Component](https://github.com/SolidLabResearch/lit-solid-login) that enables users to log in with Solid-OIDC.
+We used [Lit](https://lit.dev/) to build the component.
+The component is framework-agnostic.
+You can use it with vanilla JavaScript, but also frameworks such as React and Vue.
+End-users have the option to use either their WebID or Identity Provider to log in.
+This component follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
 
 ## Installation
 
@@ -54,17 +59,38 @@ This disables the default Solid-OIDC login process.
 
 1. Install the dependencies via
 
-   ```bash
+   ```shell
    npm i
    ```
 
 2. Start the demo via
 
-   ```bash
+   ```shell
    npm start
    ```
 
-3. Open a browser at <http://localhost:8080>.
+   Keep the demo running.
+3. In another terminal prepare the Solid pods via
+
+   ```shell
+   npm run prepare:pods
+   ```
+
+4. Start the Solid server with the pods via
+
+   ```shell
+   npm run start:pods
+   ```
+
+   The server is ready when the following message appears in the terminal
+
+   ```text
+   Listening to server at http://localhost:3000/
+   ```
+
+   Keep this process running.
+
+5. Open a browser at <http://localhost:8080>.
 
 ## Tests
 
