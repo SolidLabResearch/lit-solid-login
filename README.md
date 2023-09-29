@@ -6,6 +6,7 @@ The component is framework-agnostic.
 You can use it with vanilla JavaScript, but also frameworks such as React and Vue.
 End-users have the option to use either their WebID or Identity Provider to log in.
 This component follows the [open-wc](https://github.com/open-wc/open-wc) recommendation.
+You find a screencast [here](https://cloud.ilabt.imec.be/index.php/s/gWfBDSp5WZKaySc).
 
 ## Installation
 
